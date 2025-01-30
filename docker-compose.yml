@@ -51,7 +51,7 @@ services:
       MONGODB_URI: "mongodb://mongo:27017/investment-slayer"
       APR_Z_SCORE_MULTIPLIER: 4
       DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1334254918189580379/PHoNlsuz8e5f6arpxgGWf23bs_HzyfQwEPJnudJN8tbAK7xbda2Ys5Cr0peHkQW00kar"
-      DISCORD_PROFILE_LOGO_URL: "https://seeklogo.com/images/S/solana-sol-logo-12828AD23D-seeklogo.com.png"
+      DISCORD_PROFILE_LOGO_URL: "https://cryptologos.cc/logos/cardano-ada-logo.png?v=040"
   mongo:
     image: mongo:latest
     container_name: mongo
