@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  btc:
+    build:
+      context: .
+    working_dir: /app
+    networks:
+      - dual-investment-network
+    environment:
+      DUAL_ASSETS: "BTC/USDT"
+      ITERATION_INTERVAL: 3000
+      MONGODB_URI: "mongodb://mongo:27017/investment-slayer"
+      APR_Z_SCORE_MULTIPLIER: 4
+      DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1334174907680165948/T_LQ6cHfMpqkjXT6NF2OjLSKuhJkQBxA-C4SsMijPD_AexQCgFuzpRcV4zAXtHnysgHh"
+      DISCORD_PROFILE_LOGO_URL: "https://images.seeklogo.com/logo-png/21/1/bitcoin-logo-png_seeklogo-214721.png?v=1957908622507298104"
+  xrp:
+    build:
+      context: .
+    working_dir: /app
+    networks:
+      - dual-investment-network
+    environment:
+      DUAL_ASSETS: "XRP/USDT"
+      ITERATION_INTERVAL: 3000
+      MONGODB_URI: "mongodb://mongo:27017/investment-slayer"
+      APR_Z_SCORE_MULTIPLIER: 4
+      DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1334174894312657099/ncBrrNQTi2gu234uZBvU3iJdnx74jX9_TOCrYtTpRzeg0PpOnlszu-LoZfRhb_bz5Re0"
+      DISCORD_PROFILE_LOGO_URL: "https://images.seeklogo.com/logo-png/45/1/xrp-xrp-logo-png_seeklogo-452462.png?v=1957905418800190800"
+  sol:
+    build:
+      context: .
+    working_dir: /app
+    networks:
+      - dual-investment-network
+    environment:
+      DUAL_ASSETS: "SOL/USDT"
+      ITERATION_INTERVAL: 3000
+      MONGODB_URI: "mongodb://mongo:27017/investment-slayer"
+      APR_Z_SCORE_MULTIPLIER: 4
+      DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1334254918189580379/PHoNlsuz8e5f6arpxgGWf23bs_HzyfQwEPJnudJN8tbAK7xbda2Ys5Cr0peHkQW00kar"
+      DISCORD_PROFILE_LOGO_URL: "https://seeklogo.com/images/S/solana-sol-logo-12828AD23D-seeklogo.com.png"
+  ada:
+    build:
+      context: .
+    working_dir: /app
+    networks:
+      - dual-investment-network
+    environment:
+      DUAL_ASSETS: "ADA/USDT"
+      ITERATION_INTERVAL: 3000
+      MONGODB_URI: "mongodb://mongo:27017/investment-slayer"
+      APR_Z_SCORE_MULTIPLIER: 4
+      DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1334254918189580379/PHoNlsuz8e5f6arpxgGWf23bs_HzyfQwEPJnudJN8tbAK7xbda2Ys5Cr0peHkQW00kar"
+      DISCORD_PROFILE_LOGO_URL: "https://seeklogo.com/images/S/solana-sol-logo-12828AD23D-seeklogo.com.png"
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    networks:
+      - dual-investment-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+networks:
+  dual-investment-network:
+    driver: bridge
+volumes:
+  mongo_data:
