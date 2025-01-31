@@ -3,7 +3,8 @@ import axios from "axios";
 import {BASE_URL, InvestmentType} from "../constants";
 import {DualInvestmentInterface} from "../schemas/dual-investment";
 import * as dayjs from "dayjs";
-import {createContentMessage, pushMessage} from "./discord";
+import {pushMessage} from "./discord";
+import * as _ from "radash";
 
 export const fetchDualInvestments = async (asset: DualInvestmentAsset): Promise<DualInvestmentInterface[]> => {
     const query = {
@@ -55,6 +56,23 @@ function getAlertThreshold(aprValues: number[]): number {
     return meanAPR + (aprZScoreMultiplier * stdAPR);
 }
 
+export const getBestRateDualInvestments = (buyLowInvestments: DualInvestmentInterface[], sellHighInvestments: DualInvestmentInterface[]): DualInvestmentInterface[] => {
+    let dualInvestments = []
+    const groupedDualInvestments = _.group([
+        ...sellHighInvestments,
+        ...buyLowInvestments
+    ], i => `${i.duration}:${i.type}`)
+    for (const [_, investments] of Object.entries(groupedDualInvestments)) {
+        if (!investments?.length) {
+            continue
+        }
+        const topAPRs = investments.sort((a, b) => {
+            return b.apr - a.apr
+        }).slice(0, 2)
+        dualInvestments.push(...topAPRs)
+    }
+    return dualInvestments
+}
 export const analyzeDualInvestment = (
     afterUpdateAsset: DualInvestmentInterface
 ): void => {

@@ -1,10 +1,9 @@
 import 'dotenv/config';
 
 import {InvestmentType} from "./constants";
-import {analyzeDualInvestment, fetchDualInvestments} from "./libs/assets";
+import {analyzeDualInvestment, fetchDualInvestments, getBestRateDualInvestments} from "./libs/assets";
 import type {Mongoose} from 'mongoose';
 import {connect} from 'mongoose';
-import * as _ from 'radash';
 import {
     createUpdateAPRChangeHistoryQueries,
     createUpdateDualInvestmentQueries,
@@ -33,16 +32,12 @@ if (store.dualAssets.length !== 2) {
 }
 
 async function iterate() {
-    const pairs = [
-        store.dualAssets.at(0) || '',
-        store.dualAssets.at(1) || ''
-    ]
     const [
         sellHighInvestments,
         buyLowInvestments
     ] = await Promise.all([
         fetchDualInvestments({
-            investmentAsset: pairs[0],
+            investmentAsset: store.dualAssets[0],
             targetAsset: store.dualAssets[1],
             projectType: InvestmentType.SellHigh
         }),
@@ -52,26 +47,7 @@ async function iterate() {
             projectType: InvestmentType.BuyLow
         })
     ])
-    let dualInvestments = []
-    const groupedDualInvestments = _.group([
-        ...sellHighInvestments,
-        ...buyLowInvestments
-    ], i => `${i.duration}:${i.type}`)
-    for (const [_, investments] of Object.entries(groupedDualInvestments)) {
-        if (!investments?.length) {
-            continue
-        }
-        const topAPR = investments.sort((a, b) => {
-            return b.apr - a.apr
-        }).at(0)
-        if (!topAPR) {
-            continue
-        }
-        dualInvestments.push(topAPR)
-    }
-    if (dualInvestments.length === 0) {
-        return
-    }
+    const dualInvestments = getBestRateDualInvestments(sellHighInvestments, buyLowInvestments)
     const updateQueries = createUpdateDualInvestmentQueries(dualInvestments)
     const updateMaxAPRQueries = createUpdateMaxAPRQueries(dualInvestments)
     const updateAPRChangeHistoryQueries = createUpdateAPRChangeHistoryQueries(dualInvestments)
