@@ -19,7 +19,7 @@ const avatarURL = process.env.DISCORD_PROFILE_LOGO_URL || ''
 export const createContentMessage = (dualAsset: DualInvestmentInterface) => {
 
     return _.template(messageTemplate, {
-        duration: dualAsset.duration + 1,
+        duration: dualAsset.duration,
         apr: dualAsset.apr.toFixed(2),
         targetAsset: dualAsset.targetAsset,
         investmentAsset: dualAsset.investmentAsset,
@@ -47,7 +47,7 @@ export const pushMessage = async (dualAsset: DualInvestmentInterface) => {
         "avatar_url": avatarURL,
         "attachments": []
     }).then(() => {
-        console.log('Message sent')
+        // console.log('Message sent')
     }).catch((error) => {
         console.error('Error sending message', error)
     })

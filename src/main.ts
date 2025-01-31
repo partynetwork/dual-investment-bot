@@ -52,28 +52,39 @@ async function iterate() {
             projectType: InvestmentType.BuyLow
         })
     ])
-    const dualInvestments = [
+    let dualInvestments = []
+    const groupedDualInvestments = _.group([
         ...sellHighInvestments,
         ...buyLowInvestments
-    ]
+    ], i => `${i.duration}:${i.type}`)
+    for (const [_, investments] of Object.entries(groupedDualInvestments)) {
+        if (!investments?.length) {
+            continue
+        }
+        const topAPR = investments.sort((a, b) => {
+            return b.apr - a.apr
+        }).at(0)
+        if (!topAPR) {
+            continue
+        }
+        dualInvestments.push(topAPR)
+    }
+    if (dualInvestments.length === 0) {
+        return
+    }
     const updateQueries = createUpdateDualInvestmentQueries(dualInvestments)
     const updateMaxAPRQueries = createUpdateMaxAPRQueries(dualInvestments)
     const updateAPRChangeHistoryQueries = createUpdateAPRChangeHistoryQueries(dualInvestments)
-    const dualInvestmentById = _.objectify(dualInvestments, i => i.id)
     await DualInvestment.bulkWrite(updateQueries)
-    await DualInvestment.bulkWrite(updateMaxAPRQueries)
-    await DualInvestment.bulkWrite(updateAPRChangeHistoryQueries)
-    const dualInvestmentIds = Array.from(new Set(dualInvestments.map((dualInvestment) => dualInvestment.id)))
+    await DualInvestment.bulkWrite([
+        ...updateMaxAPRQueries,
+        ...updateAPRChangeHistoryQueries
+    ])
+    const dualInvestmentIds = dualInvestments.map((i) => i.id)
     const results = await findDualInvestmentByIds(dualInvestmentIds)
-    results
-        // sort by APR descending
-        .sort((a, b) => {
-            return b.apr - a.apr
-        })
-        // take top 10
-        .forEach((result) => {
-            analyzeDualInvestment(result)
-        })
+    results.forEach((result) => {
+        analyzeDualInvestment(result)
+    })
 }
 
 let mongoose: Mongoose;

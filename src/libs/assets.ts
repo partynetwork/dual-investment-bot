@@ -73,9 +73,9 @@ export const analyzeDualInvestment = (
             .sort((a, b) => a - b)
             .filter((apr) => apr != maxAPR)
         const alertThreshold = getAlertThreshold(aprValues)
-        console.log(`[${afterUpdateAsset.id}]
-         APR Threshold: ${alertThreshold}
-         Asset: ${afterUpdateAsset.investmentAsset} has a high APR from ${aprValues.at(-1)} to ${maxAPR}`)
+        // console.log(`[${afterUpdateAsset.id}]
+        //  APR Threshold: ${alertThreshold}
+        //  Asset: ${afterUpdateAsset.investmentAsset} has a high APR from ${aprValues.at(-1)} to ${maxAPR}`)
         if (afterUpdateAsset.apr >= alertThreshold) {
             // console.log(createContentMessage(afterUpdateAsset))
             pushMessage(afterUpdateAsset)
